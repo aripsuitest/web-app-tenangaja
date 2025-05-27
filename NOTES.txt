@@ -1,0 +1,6 @@
+1. Pastikan Nodejs sudah terinstall di komputernya
+2. Pastikan mysql db sudah terinstall
+3. Buat database baru dengan nama tenangaja_db
+4. Import tenangaja_db.sql yang ada didalam folder DATABASE_EXPORT
+5. Agar chat sistemnya bisa bekerja, masih perlu settings firebase databasenya
+6. Agar midtrans paymentnya bisa bekerja masih perlu ambil data client key, dan server key dari midtransnya

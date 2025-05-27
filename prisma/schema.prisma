@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id          String  @id @default(uuid())
+  name        String
+  email       String  @unique
+  password    String
+  phone       String?
+  address     String?
+  gender      String?
+  profile_pic String?
+  role        Roles @default(user)
+
+  worker        Worker?
+  orders        Order[]
+  favorites     FavoriteWorker[]
+  notifications Notification[]
+  payments      Payment[]
+}
+
+model Worker {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String @unique
+
+  description String?
+  status      WorkerStatus @default(inactive)
+  banner      String?
+
+  categories    WorkerCategory[]
+  orders        Order[]
+  favorites     FavoriteWorker[]
+  notifications Notification[]
+}
+
+model FavoriteWorker {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  worker   Worker @relation(fields: [workerId], references: [id])
+  workerId String
+
+  @@unique([userId, workerId])
+}
+
+model Rating {
+  id       String   @id @default(uuid())
+  order    Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId  String   @unique
+  rating   Int
+  comment  String?
+
+  createdAt DateTime @default(now())
+}
+
+
+model Order {
+  id     String @id @default(uuid())
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  worker   Worker @relation(fields: [workerId], references: [id])
+  workerId String
+
+  status OrderStatus @default(PENDING)
+  date   DateTime    @default(now())
+  notes  String?
+  budget Float
+  deadline Int @default(7)
+  userConfirmed Boolean @default(false)
+
+  payment Payment?
+  rating Rating?
+}
+
+model Payment {
+  id      String @id @default(uuid())
+  order   Order  @relation(fields: [orderId], references: [id])
+  orderId String @unique
+
+  user   User   @relation(fields: [userId], references: [id])
+  userId String
+
+  method String
+  status PaymentStatus @default(PENDING)
+  paidAt DateTime?
+  amount Float
+  paymentReference String
+  snapToken String
+  redirectUrl String
+}
+
+model Notification {
+  id     String  @id @default(uuid())
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String?
+
+  worker   Worker? @relation(fields: [workerId], references: [id])
+  workerId String?
+
+  message   String
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model Category {
+  id            String           @id @default(uuid())
+  name          String
+  subcategories SubCategory[]
+  workers       WorkerCategory[]
+  image         String
+  description   String?
+}
+
+model SubCategory {
+  id         String   @id @default(uuid())
+  name       String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  categoryId String
+}
+
+model WorkerCategory {
+  id       String @id @default(uuid())
+  worker   Worker @relation(fields: [workerId], references: [id])
+  workerId String
+
+  category   Category @relation(fields: [categoryId], references: [id])
+  categoryId String
+}
+
+model Admin {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+}
+
+enum OrderStatus {
+  PENDING
+  ACCEPTED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  FAILED
+}
+
+enum WorkerStatus {
+  active
+  inactive
+}
+
+enum Roles {
+  user
+  admin
+}
