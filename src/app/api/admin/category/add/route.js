@@ -1,7 +1,5 @@
 import { PrismaClient } from '@prisma/client';
 import { NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs/promises';
 import { getUserFromToken } from '@/lib/auth';
 
 const prisma = new PrismaClient();

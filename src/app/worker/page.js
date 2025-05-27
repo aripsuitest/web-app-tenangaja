@@ -1070,7 +1070,7 @@ export default function WorkerDashboard() {
                   </div>
                 ) : conversations.length === 0 ? (
                   <div className="text-center py-10 text-gray-500">
-                    No conversations yet. When clients message you, they'll appear here.
+                    No conversations yet. When clients message you, they&apos;ll appear here.
                   </div>
                 ) : (
                   conversations.map((conversation) => (
